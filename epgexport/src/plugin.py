@@ -28,8 +28,12 @@ import xml.etree.ElementTree as etree
 from shutil import rmtree
 from socket import gethostname, getfqdn
 from time import gmtime, strftime
+
 from twisted.internet.threads import deferToThread
-from twisted.internet.reactor import listenTCP, run
+
+from twisted.internet import ssl
+from twisted.internet.reactor import listenTCP, run, listenSSL
+
 from twisted.web import http, static
 from twisted.web.resource import Resource
 from twisted.web.server import Site
@@ -340,6 +344,7 @@ def startingCustomEPGExternal():
 	factory = Site(root)
 	port = int(config.plugins.epgexport.port.value)
 	listenTCP(port, factory)
+	listenSSL(8000, factory, ssl.DefaultOpenSSLContextFactory('/etc/enigma2/key.pem', '/etc/enigma2/cert.pem'))
 	try:
 		run()
 	except Exception as err:
